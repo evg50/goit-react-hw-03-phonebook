@@ -1,25 +1,72 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import "./App.css";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import { nanoid } from "nanoid";
+import FormInput from "./components/FormInput";
+import Filter from "./components/Filter"
+import Contacts from "./components/Contacts";
+
+
+
+class App extends Component {
+  state = {
+    contacts: [
+      { id: "id-1", name: "Rosie Simpson", number: "459-12-56" },
+      { id: "id-2", name: "Hermione Kline", number: "443-89-12" },
+      { id: "id-3", name: "Eden Clements", number: "645-17-79" },
+      { id: "id-4", name: "Annie Copeland", number: "227-91-26" },
+    ],
+    filter: "",
+    };
+
+
+  formSubmitHandler = (newContact) => {
+    newContact.id = nanoid();
+  
+    let check = true;
+    this.state.contacts.map(contact=> {if (contact.name === newContact.name){
+
+      alert(`${newContact.name} is already in contacs.` );
+      check = false;
+    }} ) ;
+    
+     if (check) {
+      this.setState((prevState) => ({
+      contacts: [...prevState.contacts, newContact],
+    }))}
+  };
+
+  filterHandler = (e) => {
+    // console.log(e)
+    const {name , value} = e.currentTarget;
+    this.setState({ [name]: value });
+    }
+  filterVisible =() => {
+    const { filter, contacts } = this.state
+    const normalizedFilter = filter.toLowerCase();
+    return contacts.filter(contact => contact.name.toLowerCase().includes(normalizedFilter))
 }
-
+  deleteContact =(e) => {
+    console.log("delete", e)
+    this.setState( prevState => ({
+      contacts:prevState.contacts.filter(contact=>contact.id !== e)
+    }))
+  }
+    
+  
+  render() {
+    return (
+      <div>
+        
+        <p className="title">Phonebook</p>;
+        <FormInput onSubmit={this.formSubmitHandler} />
+        <p className="title">Contacts</p>;
+        
+        <Filter valueFilter={this.state.filter} onChange={this.filterHandler}/>
+        <Contacts contactsList={this.filterVisible()} onDeleteContact={this.deleteContact} />
+      </div>
+    );
+  }
+}
 export default App;
+
