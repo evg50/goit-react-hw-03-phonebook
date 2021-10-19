@@ -18,7 +18,24 @@ class App extends Component {
     ],
     filter: "",
     };
+  componentDidUpdate(prevProps,prevState) {
+    console.log('App componentDidUpdate');
+    const nextContact = this.state.contacts;
+    const prevContact = prevState.contacts;
+    if  (nextContact !== prevContact) {
+      console.log(nextContact, prevContact);
+      console.log("Обновился массив контактов");
+      localStorage.setItem('contacts', JSON.stringify(nextContact));
+    }
+  }
 
+  componentDidMount() {
+    const contacts = localStorage.getItem('contacts');
+    const parsedContacts = JSON.parse(contacts);
+    if (parsedContacts) {
+      this.setState ({contacts:parsedContacts})
+     }
+  }
 
   formSubmitHandler = (newContact) => {
     newContact.id = nanoid();
